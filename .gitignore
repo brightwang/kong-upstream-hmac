@@ -1,0 +1,6 @@
+.project
+.settings
+.buildpath
+*.src.rock
+*.src.rock
+.DS_Store
