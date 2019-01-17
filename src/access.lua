@@ -1,17 +1,4 @@
--- © Optum 2018
-local resty_sha256 = require "resty.sha256"
-local str = require "resty.string"
-local singletons = require "kong.singletons"
-local public_key_der_location = os.getenv("KONG_SSL_CERT_DER")
-local private_key_location = os.getenv("KONG_SSL_CERT_KEY")
-local pl_file = require "pl.file"
-local json = require "cjson"
-local openssl_digest = require "openssl.digest"
-local openssl_pkey = require "openssl.pkey"
-local table_concat = table.concat
 local _M = {}
-
-
 local hmac_sha1 = ngx.hmac_sha1
 local parse_time = ngx.parse_http_time
 local decode_base64 = ngx.decode_base64
@@ -24,10 +11,6 @@ local DIGEST = "digest"
 local DATE = "date"
 local fmt = string.format
 local sha256 = require "resty.sha256"
-
-
-
-
 
 
 local hmac = {
@@ -56,7 +39,11 @@ local function add_hmac_header(conf)
     local secret = conf.secret
     local validate_request_body = conf.validate_request_body
     local method = kong.request.get_method()
-    local request_uri = kong.request.get_path_with_query()
+    local request_uri = ngx.var.upstream_uri
+    local raw_query = kong.request.get_raw_query()
+    if not (raw_query == nil or raw_query == '') then
+        request_uri = request_uri .. "?" .. kong.request.get_raw_query()
+    end
     local request_line = fmt("%s %s HTTP/%s", method,
         request_uri, kong.request.get_http_version())
     local body, err = kong.request.get_raw_body()
@@ -72,14 +59,18 @@ local function add_hmac_header(conf)
     if validate_request_body then
         src_str = "digest: SHA-256=" .. digest .. "\n" .. src_str
         header_str = "digest " .. header_str
-        ngx.req.set_header("Digest",digest)
+        ngx.req.set_header("Digest", digest)
     end
     local sign_str = hmac[algorithm](secret, src_str)
     sign_str = encode_base64(sign_str)
-    ngx.req.set_header("Date",date)
+    ngx.req.set_header("Date", date)
     ngx.req.set_header("Authorization",
-        fmt("hmac id=%s, algorithm=\"hmac-sha1\", headers=\"%s\", signature=\"%s\"",
+        fmt("hmac username=\"%s\", algorithm=\"hmac-sha1\", headers=\"%s\", signature=\"%s\"",
             token, header_str, sign_str))
+    kong.log.err("request_uri: ", request_uri)
+    kong.log.err("date: ", date)
+    kong.log.err("Authorization: ", fmt("hmac usename=\"%s\", algorithm=\"hmac-sha1\", headers=\"%s\", signature=\"%s\"",
+        token, header_str, sign_str))
 end
 
 

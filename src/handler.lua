@@ -14,6 +14,6 @@ function UpstreamHMACHandler:access(conf)
     access.execute(conf)
 end
 
-UpstreamHMACHandler.PRIORITY = 850
+UpstreamHMACHandler.PRIORITY = 699
 
 return UpstreamHMACHandler
