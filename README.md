@@ -15,6 +15,6 @@ luarocks make *.rockspec
 ##### Configure this plugin on a Route with:
       
 ```
-curl -X POST http://kong:8001/routes/7b3e59cf-2424-496b-8623-2947ed84884b/plugins -d "name=kong-upstream-hmac" -d "config.token=token" -d "config.secret=secret"
+curl -X POST http://kong:8001/routes/{route-id}/plugins -d "name=kong-upstream-hmac" -d "config.token=token" -d "config.secret=secret"
 
 ```
