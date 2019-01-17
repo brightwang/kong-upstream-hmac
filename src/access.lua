@@ -54,20 +54,13 @@ local function add_hmac_header(conf)
         src_str = "digest: " .. digest .. "\n" .. src_str
         header_str = "digest " .. header_str
         ngx.req.set_header("Digest", digest)
-        kong.log.err("digest: ", digest)
     end
-    kong.log.err('src_str',src_str)
     local sign_str = hmac[algorithm](secret, src_str)
     sign_str = encode_base64(sign_str)
     ngx.req.set_header("Date", date)
     ngx.req.set_header("Authorization",
         fmt("hmac username=\"%s\", algorithm=\"hmac-sha1\", headers=\"%s\", signature=\"%s\"",
             token, header_str, sign_str))
-    kong.log.err("body: ", body)
-    kong.log.err("request_uri: ", request_uri)
-    kong.log.err("date: ", date)
-    kong.log.err("Authorization: ", fmt("hmac usename=\"%s\", algorithm=\"hmac-sha1\", headers=\"%s\", signature=\"%s\"",
-        token, header_str, sign_str))
 end
 
 
