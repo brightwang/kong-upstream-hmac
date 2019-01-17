@@ -1,14 +1,8 @@
 local _M = {}
 local hmac_sha1 = ngx.hmac_sha1
-local parse_time = ngx.parse_http_time
-local decode_base64 = ngx.decode_base64
 local encode_base64 = ngx.encode_base64
-local utils = require "kong.tools.utils"
-local constants = require "kong.constants"
 local openssl_hmac = require "openssl.hmac"
 local kong = kong
-local DIGEST = "digest"
-local DATE = "date"
 local fmt = string.format
 local sha256 = require "resty.sha256"
 

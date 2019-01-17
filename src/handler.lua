@@ -1,5 +1,4 @@
 local BasePlugin = require "kong.plugins.base_plugin"
-local req_set_header = ngx.req.set_header
 local access = require "kong.plugins.kong-upstream-hmac.access"
 
 
