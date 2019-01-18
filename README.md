@@ -6,8 +6,9 @@ This plugin will add HMAC Signature authentication into the HTTP Header `Authori
 Kong >= 0.12.x 
 
 ```
-luarocks make *.rockspec
+luarocks install kong-upstream-hmac
 ```
+
 ##### Edit kong.conf
 > plugins = bundled,kong-upstream-hmac
 
