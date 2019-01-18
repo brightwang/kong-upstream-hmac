@@ -3,7 +3,7 @@ version = "0.0.1-0"
 supported_platforms = {"linux", "macosx"}
 source = {
   url = "git@github.com:brightwang/kong-upstream-hmac.git",
-  tag = "0.1"
+  tag = "0.0.1-0"
 }
 description = {
   summary = "Kong Plugin for Upstream HTTP HMAC Authentication",
