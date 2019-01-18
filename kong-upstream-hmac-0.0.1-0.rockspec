@@ -1,9 +1,9 @@
 package = "kong-upstream-hmac"
-version = "0.0.0-0"
+version = "0.0.1-0"
 supported_platforms = {"linux", "macosx"}
 source = {
-  url = "git://github.com/GITHUB_PROJECT.git",
-  tag = "VERSION"
+  url = "git@github.com:brightwang/kong-upstream-hmac.git",
+  tag = "0.1"
 }
 description = {
   summary = "Kong Plugin for Upstream HTTP HMAC Authentication",
