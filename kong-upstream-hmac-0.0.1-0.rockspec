@@ -2,7 +2,7 @@ package = "kong-upstream-hmac"
 version = "0.0.1-0"
 supported_platforms = {"linux", "macosx"}
 source = {
-  url = "git://github.com/brightwang/kong-upstream-hmac.git",
+  url = "git+https://github.com/brightwang/kong-upstream-hmac.git",
   tag = "0.0.1-0"
 }
 description = {
