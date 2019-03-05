@@ -45,7 +45,7 @@ local function add_hmac_header(conf)
         kong.log.debug(err)
         return false
     end
-    local date = ngx.cookie_time(ngx.now())
+    local date = ngx.http_time(ngx.now())
     local digest = general_digest(body)
     local src_str = "date: " .. date .. "\n" .. request_line
     local header_str = "date request-line"
