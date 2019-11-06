@@ -6,7 +6,6 @@ local kong = kong
 local fmt = string.format
 local sha256 = require "resty.sha256"
 
-
 local hmac = {
     ["hmac-sha1"] = function(secret, data)
         return hmac_sha1(secret, data)
@@ -32,23 +31,18 @@ local function add_hmac_header(conf)
     local token = conf.token
     local secret = conf.secret
     local validate_request_body = conf.validate_request_body
-    local method = kong.request.get_method()
-    local request_uri = ngx.var.upstream_uri
-    local raw_query = kong.request.get_raw_query()
-    if not (raw_query == nil or raw_query == '') then
-        request_uri = request_uri .. "?" .. kong.request.get_raw_query()
-    end
-    local request_line = fmt("%s %s HTTP/%s", method,
-        request_uri, kong.request.get_http_version())
     local body, err = kong.request.get_raw_body()
     if err then
         kong.log.debug(err)
         return false
     end
     local date = ngx.http_time(ngx.now())
-    local digest = general_digest(body)
-    local src_str = "date: " .. date .. "\n" .. request_line
-    local header_str = "date request-line"
+    local digest = ""
+    if validate_request_body then
+        digest = general_digest(body)
+    end
+    local src_str = "date: " .. date
+    local header_str = "date"
     local algorithm = "hmac-sha1"
     if validate_request_body then
         src_str = "digest: " .. digest .. "\n" .. src_str
@@ -59,11 +53,9 @@ local function add_hmac_header(conf)
     sign_str = encode_base64(sign_str)
     ngx.req.set_header("Date", date)
     ngx.req.set_header("Authorization",
-        fmt("hmac username=\"%s\", algorithm=\"hmac-sha1\", headers=\"%s\", signature=\"%s\"",
-            token, header_str, sign_str))
+            fmt("hmac username=\"%s\", algorithm=\"hmac-sha1\", headers=\"%s\", signature=\"%s\"",
+                    token, header_str, sign_str))
 end
-
-
 
 function _M.execute(conf)
     add_hmac_header(conf)
