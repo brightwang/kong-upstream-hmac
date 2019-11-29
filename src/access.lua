@@ -31,11 +31,16 @@ local function add_hmac_header(conf)
     local token = conf.token
     local secret = conf.secret
     local validate_request_body = conf.validate_request_body
-    local body, err = kong.request.get_raw_body()
-    if err then
-        kong.log.debug(err)
-        return false
+    local body = ''
+    if validate_request_body then
+        local raw_body, err = kong.request.get_raw_body()
+        if err then
+            kong.log.debug(err)
+            return false
+        end
+        body = raw_body
     end
+
     local date = ngx.http_time(ngx.now())
     local digest = ""
     if validate_request_body then
