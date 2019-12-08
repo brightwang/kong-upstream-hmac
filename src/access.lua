@@ -48,7 +48,7 @@ local function add_hmac_header(conf)
     end
     local src_str = "date: " .. date
     local header_str = "date"
-    local algorithm = "hmac-sha1"
+    local algorithm = "hmac-sha256"
     if validate_request_body then
         src_str = "digest: " .. digest .. "\n" .. src_str
         header_str = "digest " .. header_str
@@ -58,8 +58,8 @@ local function add_hmac_header(conf)
     sign_str = encode_base64(sign_str)
     ngx.req.set_header("Date", date)
     ngx.req.set_header("Authorization",
-            fmt("hmac username=\"%s\", algorithm=\"hmac-sha1\", headers=\"%s\", signature=\"%s\"",
-                    token, header_str, sign_str))
+            fmt("hmac username=\"%s\", algorithm=\"%s\", headers=\"%s\", signature=\"%s\"",
+                    token, algorithm, header_str, sign_str))
 end
 
 function _M.execute(conf)
