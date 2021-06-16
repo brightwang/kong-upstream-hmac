@@ -5,6 +5,7 @@ local openssl_hmac = require "openssl.hmac"
 local kong = kong
 local fmt = string.format
 local sha256 = require "resty.sha256"
+local UPSTREAM_HMAC_AUTH_HEADER_NAME = "X-Ag-Upstream-Authorization"
 
 local hmac = {
     ["hmac-sha1"] = function(secret, data)
@@ -57,9 +58,12 @@ local function add_hmac_header(conf)
     local sign_str = hmac[algorithm](secret, src_str)
     sign_str = encode_base64(sign_str)
     ngx.req.set_header("Date", date)
+    local upstream_authorization = fmt("hmac username=\"%s\", algorithm=\"%s\", headers=\"%s\", signature=\"%s\"",
+            token, algorithm, header_str, sign_str)
+    ngx.req.set_header(UPSTREAM_HMAC_AUTH_HEADER_NAME,
+            upstream_authorization)
     ngx.req.set_header("Authorization",
-            fmt("hmac username=\"%s\", algorithm=\"%s\", headers=\"%s\", signature=\"%s\"",
-                    token, algorithm, header_str, sign_str))
+            upstream_authorization)
 end
 
 function _M.execute(conf)
